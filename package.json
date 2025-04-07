@@ -1,0 +1,14 @@
+{
+  "name": "dashboard",
+  "version": "1.0.0",
+  "description": "Dashboard application",
+  "scripts": {
+    "dev": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "start": "cd frontend && npm run start",
+    "lint": "cd frontend && npm run lint"
+  },
+  "dependencies": {
+    "@headlessui/react": "^2.2.1"
+  }
+}
