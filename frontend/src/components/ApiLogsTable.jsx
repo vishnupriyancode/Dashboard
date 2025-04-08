@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MagnifyingGlassIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon, EllipsisVerticalIcon, DocumentArrowDownIcon } from '@heroicons/react/24/outline';
 import { Menu } from '@headlessui/react';
 import { payloadData } from '../data/payloadData';
 import { sampleApiLogs } from '../data/sampleApiLogs';
@@ -109,8 +109,9 @@ const ApiLogsTable = () => {
         </div>
         <button
           onClick={handleExport}
-          className="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          className="inline-flex items-center gap-2 rounded-md bg-gray-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600 transition-colors duration-200"
         >
+          <DocumentArrowDownIcon className="h-5 w-5" aria-hidden="true" />
           Export to Excel
         </button>
         <select
@@ -151,7 +152,7 @@ const ApiLogsTable = () => {
                 State
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                Value
+                Reqested Id
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                 Actions
