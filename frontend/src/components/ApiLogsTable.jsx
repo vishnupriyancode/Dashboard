@@ -159,7 +159,7 @@ const ApiLogsTable = () => {
             {filteredLogs.map((log) => (
               <tr key={log.id} className={log.status === 'error' ? 'bg-red-50' : ''}>
                 <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
-                  {log.domain_id}
+                  <span className="font-mono">{log.domain_id}</span>
                 </td>
                 <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
                   {log.model}
@@ -191,14 +191,17 @@ const ApiLogsTable = () => {
                 <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
                   {log.endpoint}
                 </td>
-                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
                   {log.time}
                 </td>
-                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
                   {log.status === 'success' ? 'Completed' : log.status === 'error' ? 'Failed' : 'In Progress'}
                 </td>
                 <td className="whitespace-nowrap px-6 py-4 text-sm font-mono bg-gray-50 rounded">
                   {log.value}
+                </td>
+                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
+                  <span className="font-mono">{log.request_id}</span>
                 </td>
                 <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
                   <Menu as="div" className="relative inline-block text-left">
@@ -215,7 +218,7 @@ const ApiLogsTable = () => {
                                 active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
                               } flex w-full px-4 py-2 text-sm`}
                             >
-                              Copy Request ID
+                              Copy JSON
                             </button>
                           )}
                         </Menu.Item>
