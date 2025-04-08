@@ -15,8 +15,16 @@ const ApiLogsTable = () => {
     // Load logs from localStorage
     const loadLogs = () => {
       const storedLogs = JSON.parse(localStorage.getItem('apiLogs') || '[]');
-      // If no logs in localStorage, use sample data
-      setLogs(storedLogs.length > 0 ? storedLogs : sampleApiLogs);
+      console.log('Stored logs:', storedLogs);
+      console.log('Sample logs:', sampleApiLogs);
+      // Clear localStorage if it contains old data
+      if (storedLogs.length > 0 && storedLogs[0].model === 'Validation') {
+        localStorage.removeItem('apiLogs');
+        setLogs(sampleApiLogs);
+      } else {
+        // If no logs in localStorage, use sample data
+        setLogs(storedLogs.length > 0 ? storedLogs : sampleApiLogs);
+      }
     };
 
     // Load initial logs
@@ -119,6 +127,9 @@ const ApiLogsTable = () => {
                 Model
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                Method
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                 Status
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
@@ -131,7 +142,7 @@ const ApiLogsTable = () => {
                 State
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                Value
+                Request ID
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                 Actions
@@ -150,9 +161,22 @@ const ApiLogsTable = () => {
                 <td className="whitespace-nowrap px-6 py-4">
                   <span
                     className={`inline-flex rounded-full px-2 text-xs font-semibold leading-5 ${
+                      log.method === 'GET'
+                        ? 'bg-blue-100 text-blue-800'
+                        : 'bg-purple-100 text-purple-800'
+                    }`}
+                  >
+                    {log.method}
+                  </span>
+                </td>
+                <td className="whitespace-nowrap px-6 py-4">
+                  <span
+                    className={`inline-flex rounded-full px-2 text-xs font-semibold leading-5 ${
                       log.status === 'success'
                         ? 'bg-green-100 text-green-800'
-                        : 'bg-red-100 text-red-800'
+                        : log.status === 'error'
+                        ? 'bg-red-100 text-red-800'
+                        : 'bg-yellow-100 text-yellow-800'
                     }`}
                   >
                     {log.status}
@@ -167,7 +191,7 @@ const ApiLogsTable = () => {
                 <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
                   {log.status === 'success' ? 'Completed' : log.status === 'error' ? 'Failed' : 'In Progress'}
                 </td>
-                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                <td className="whitespace-nowrap px-6 py-4 text-sm font-mono bg-gray-50 rounded">
                   {log.value}
                 </td>
                 <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
@@ -185,7 +209,7 @@ const ApiLogsTable = () => {
                                 active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
                               } flex w-full px-4 py-2 text-sm`}
                             >
-                              Copy JSON Payload
+                              Copy Request ID
                             </button>
                           )}
                         </Menu.Item>
