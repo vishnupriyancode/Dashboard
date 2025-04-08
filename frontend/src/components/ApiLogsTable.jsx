@@ -86,6 +86,7 @@ const ApiLogsTable = () => {
 
   return (
     <div className="flex flex-col">
+      <h1 className="text-2xl font-bold mb-6">API Records</h1>
       <div className="mb-4 flex items-center space-x-4">
         <div className="relative w-64">
           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">

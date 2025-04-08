@@ -20,7 +20,7 @@ const Sidebar = () => {
   return (
     <div className="flex h-screen w-64 flex-col bg-gray-900">
       <div className="flex h-16 items-center justify-center border-b border-gray-800">
-        <h1 className="text-xl font-bold text-white">API Dashboard</h1>
+        <h1 className="text-xl font-bold text-white">Project Name</h1>
       </div>
       <nav className="flex-1 space-y-1 px-2 py-4">
         {navigation.map((item) => {
