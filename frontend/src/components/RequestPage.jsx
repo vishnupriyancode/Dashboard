@@ -16,20 +16,42 @@ const RequestPage = () => {
   ];
 
   const logApiRequest = (method, key, status, endpoint) => {
+    // Generate a model name based on the key
+    const models = [
+      'GPT-4',
+      'GPT-3.5-Turbo',
+      'DALL-E-3',
+      'Claude-2',
+      'Stable-Diffusion-XL',
+      'Llama-2-70B',
+      'PaLM-2',
+      'Gemini-Pro'
+    ];
+    
+    // Use the last two digits of the key to select a model
+    const lastTwoDigits = key.slice(-2);
+    const modelIndex = Math.abs(parseInt(lastTwoDigits)) % models.length;
+    const selectedModel = models[modelIndex] || models[0]; // Fallback to first model if calculation fails
+
     const log = {
       id: Date.now(),
       domain_id: `dom_${Date.now()}`,
-      model: 'Validation',
+      model: selectedModel,
+      method: method,
       status: status,
       endpoint: endpoint,
       time: new Date().toISOString(),
       value: key,
+      request_id: `req_${key}_${Date.now()}`
     };
 
     // Get existing logs from localStorage or initialize empty array
     const existingLogs = JSON.parse(localStorage.getItem('apiLogs') || '[]');
     existingLogs.unshift(log); // Add new log at the beginning
     localStorage.setItem('apiLogs', JSON.stringify(existingLogs));
+    
+    // Force a refresh of the logs display
+    window.dispatchEvent(new Event('storage'));
   };
 
   const handleSubmit = async (method) => {
@@ -136,14 +158,14 @@ const RequestPage = () => {
               <button
                 onClick={() => handleSubmit('GET')}
                 disabled={loading}
-                className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md transition duration-200 disabled:opacity-50"
+                className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md transition duration-200 disabled:opacity-50"
               >
                 {loading ? 'Loading...' : 'GET Request'}
               </button>
               <button
                 onClick={() => handleSubmit('POST')}
                 disabled={loading}
-                className="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-md transition duration-200 disabled:opacity-50"
+                className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md transition duration-200 disabled:opacity-50"
               >
                 {loading ? 'Loading...' : 'POST Request'}
               </button>

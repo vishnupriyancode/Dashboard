@@ -17,14 +17,8 @@ const ApiLogsTable = () => {
       const storedLogs = JSON.parse(localStorage.getItem('apiLogs') || '[]');
       console.log('Stored logs:', storedLogs);
       console.log('Sample logs:', sampleApiLogs);
-      // Clear localStorage if it contains old data
-      if (storedLogs.length > 0 && storedLogs[0].model === 'Validation') {
-        localStorage.removeItem('apiLogs');
-        setLogs(sampleApiLogs);
-      } else {
-        // If no logs in localStorage, use sample data
-        setLogs(storedLogs.length > 0 ? storedLogs : sampleApiLogs);
-      }
+      // Use stored logs if available, otherwise use sample data
+      setLogs(storedLogs.length > 0 ? storedLogs : sampleApiLogs);
     };
 
     // Load initial logs
@@ -38,6 +32,15 @@ const ApiLogsTable = () => {
       window.removeEventListener('storage', loadLogs);
     };
   }, []);
+
+  const deleteLog = (logId) => {
+    // Remove from state
+    const updatedLogs = logs.filter(log => log.id !== logId);
+    setLogs(updatedLogs);
+    
+    // Update localStorage
+    localStorage.setItem('apiLogs', JSON.stringify(updatedLogs));
+  };
 
   const copyToClipboard = (value) => {
     const jsonPayload = payloadData[value];
@@ -67,7 +70,7 @@ const ApiLogsTable = () => {
       computedState.toLowerCase().includes(searchTermLower);
     const matchesStatus = statusFilter === 'all' || log.status === statusFilter;
     return matchesSearch && matchesStatus;
-  });
+  }).slice(0, 1000); // Limit to 1000 records
 
   const handleExport = () => {
     const exportData = filteredLogs.map(log => ({
@@ -148,7 +151,7 @@ const ApiLogsTable = () => {
                 State
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                Request ID
+                Value
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                 Actions
@@ -200,9 +203,6 @@ const ApiLogsTable = () => {
                 <td className="whitespace-nowrap px-6 py-4 text-sm font-mono bg-gray-50 rounded">
                   {log.value}
                 </td>
-                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
-                  <span className="font-mono">{log.request_id}</span>
-                </td>
                 <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
                   <Menu as="div" className="relative inline-block text-left">
                     <Menu.Button className="inline-flex items-center rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none">
@@ -219,6 +219,18 @@ const ApiLogsTable = () => {
                               } flex w-full px-4 py-2 text-sm`}
                             >
                               Copy JSON
+                            </button>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <button
+                              onClick={() => deleteLog(log.id)}
+                              className={`${
+                                active ? 'bg-red-50 text-red-900' : 'text-red-700'
+                              } flex w-full px-4 py-2 text-sm`}
+                            >
+                              Delete
                             </button>
                           )}
                         </Menu.Item>
