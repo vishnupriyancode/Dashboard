@@ -52,6 +52,12 @@ const ApiLogsTable = () => {
   const filteredLogs = logs.filter((log) => {
     const searchTermLower = searchTerm.toLowerCase();
     const computedState = log.status === 'success' ? 'Completed' : log.status === 'error' ? 'Failed' : 'In Progress';
+    
+    // Special handling for POST/GET search
+    if (searchTermLower === 'post' || searchTermLower === 'get') {
+      return (log.method || '').toLowerCase() === searchTermLower;
+    }
+    
     const matchesSearch = 
       (log.endpoint || '').toLowerCase().includes(searchTermLower) ||
       (log.domain_id?.toString() || '').toLowerCase().includes(searchTermLower) ||
