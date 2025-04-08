@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { MagnifyingGlassIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import { Menu } from '@headlessui/react';
 import { payloadData } from '../data/payloadData';
+import { sampleApiLogs } from '../data/sampleApiLogs';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 
@@ -14,7 +15,8 @@ const ApiLogsTable = () => {
     // Load logs from localStorage
     const loadLogs = () => {
       const storedLogs = JSON.parse(localStorage.getItem('apiLogs') || '[]');
-      setLogs(storedLogs);
+      // If no logs in localStorage, use sample data
+      setLogs(storedLogs.length > 0 ? storedLogs : sampleApiLogs);
     };
 
     // Load initial logs
@@ -40,7 +42,15 @@ const ApiLogsTable = () => {
   };
 
   const filteredLogs = logs.filter((log) => {
-    const matchesSearch = log.endpoint.toLowerCase().includes(searchTerm.toLowerCase());
+    const searchTermLower = searchTerm.toLowerCase();
+    const computedState = log.status === 'success' ? 'Completed' : log.status === 'error' ? 'Failed' : 'In Progress';
+    const matchesSearch = 
+      (log.endpoint || '').toLowerCase().includes(searchTermLower) ||
+      (log.domain_id?.toString() || '').toLowerCase().includes(searchTermLower) ||
+      (log.model || '').toLowerCase().includes(searchTermLower) ||
+      (log.status || '').toLowerCase().includes(searchTermLower) ||
+      (log.value?.toString() || '').toLowerCase().includes(searchTermLower) ||
+      computedState.toLowerCase().includes(searchTermLower);
     const matchesStatus = statusFilter === 'all' || log.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
