@@ -15,6 +15,23 @@ const RequestPage = () => {
     { id: 'production', name: 'Production', baseUrl: 'https://api.example.com' }
   ];
 
+  const logApiRequest = (method, key, status, endpoint) => {
+    const log = {
+      id: Date.now(),
+      domain_id: `dom_${Date.now()}`,
+      model: 'Validation',
+      status: status,
+      endpoint: endpoint,
+      time: new Date().toISOString(),
+      value: key,
+    };
+
+    // Get existing logs from localStorage or initialize empty array
+    const existingLogs = JSON.parse(localStorage.getItem('apiLogs') || '[]');
+    existingLogs.unshift(log); // Add new log at the beginning
+    localStorage.setItem('apiLogs', JSON.stringify(existingLogs));
+  };
+
   const handleSubmit = async (method) => {
     setLoading(true);
     setError(null);
@@ -42,7 +59,9 @@ const RequestPage = () => {
             baseUrl: environments.find(env => env.id === selectedEnv).baseUrl,
             data: sampleData[keyValue]
           });
+          logApiRequest('GET', keyValue, 'success', '/api/validate');
         } else {
+          logApiRequest('GET', keyValue, 'error', '/api/validate');
           throw new Error('Key not found');
         }
       } else if (method === 'POST') {
@@ -56,7 +75,9 @@ const RequestPage = () => {
           };
           console.log('POST Response:', responseData);
           setResponse(responseData);
+          logApiRequest('POST', keyValue, 'success', '/api/validate');
         } else {
+          logApiRequest('POST', keyValue, 'error', '/api/validate');
           throw new Error('Invalid key');
         }
       }

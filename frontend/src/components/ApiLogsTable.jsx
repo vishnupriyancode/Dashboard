@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MagnifyingGlassIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import { Menu } from '@headlessui/react';
 import { payloadData } from '../data/payloadData';
@@ -8,6 +8,26 @@ import { saveAs } from 'file-saver';
 const ApiLogsTable = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [logs, setLogs] = useState([]);
+
+  useEffect(() => {
+    // Load logs from localStorage
+    const loadLogs = () => {
+      const storedLogs = JSON.parse(localStorage.getItem('apiLogs') || '[]');
+      setLogs(storedLogs);
+    };
+
+    // Load initial logs
+    loadLogs();
+
+    // Set up event listener for storage changes
+    window.addEventListener('storage', loadLogs);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('storage', loadLogs);
+    };
+  }, []);
 
   const copyToClipboard = (value) => {
     const jsonPayload = payloadData[value];
@@ -18,46 +38,6 @@ const ApiLogsTable = () => {
       navigator.clipboard.writeText(value);
     }
   };
-
-  // Mock data - replace with actual API data
-  const logs = [
-    {
-      id: 1,
-      domain_id: 'dom_123',
-      model: 'GPT-4',
-      status: 'success',
-      endpoint: '/api/users',
-      time: '2024-04-05 14:30:00',
-      value: '1234567891012',
-    },
-    {
-      id: 2,
-      domain_id: 'dom_124',
-      model: 'GPT-3.5',
-      status: 'error',
-      endpoint: '/api/chat/completions',
-      time: '2024-04-05 14:35:00',
-      value: '1234567891013',
-    },
-    {
-      id: 3,
-      domain_id: 'dom_125',
-      model: 'DALL-E',
-      status: 'error',
-      endpoint: '/api/images/generate',
-      time: '2024-04-05 14:40:00',
-      value: '9876543210987',
-    },
-    {
-      id: 4,
-      domain_id: 'dom_125',
-      model: 'DALL-E',
-      status: 'pending',
-      endpoint: '/api/images/generate',
-      time: '2024-04-05 14:40:00',
-      value: '4567891234567',
-    }
-  ];
 
   const filteredLogs = logs.filter((log) => {
     const matchesSearch = log.endpoint.toLowerCase().includes(searchTerm.toLowerCase());
