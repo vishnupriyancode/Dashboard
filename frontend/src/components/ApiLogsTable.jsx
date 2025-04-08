@@ -35,7 +35,7 @@ const ApiLogsTable = () => {
       status: 'error',
       endpoint: '/api/chat/completions',
       time: '2024-04-05 14:35:00',
-      value: '1234567891012',
+      value: '1234567891013',
     },
     {
       id: 3,
@@ -44,7 +44,7 @@ const ApiLogsTable = () => {
       status: 'error',
       endpoint: '/api/images/generate',
       time: '2024-04-05 14:40:00',
-      value: '1234567891012',
+      value: '9876543210987',
     },
     {
       id: 4,
@@ -53,7 +53,7 @@ const ApiLogsTable = () => {
       status: 'pending',
       endpoint: '/api/images/generate',
       time: '2024-04-05 14:40:00',
-      value: '1234567891012',
+      value: '4567891234567',
     }
   ];
 

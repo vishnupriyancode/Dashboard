@@ -20,8 +20,8 @@ export const payloadData = {
     }
   },
   '9876543210987': {
-    name: "Sample Data 2",
-    value: "Test Value 2",
+    name: "Sample Data 3",
+    value: "Test Value 3",
     timestamp: "2024-04-07T11:00:00Z",
     status: "inactive",
     metadata: {
@@ -30,8 +30,8 @@ export const payloadData = {
     }
   },
   "4567891234567": {
-    name: "Sample Data 3",
-    value: "Test Value 3",
+    name: "Sample Data 4",
+    value: "Test Value 4",
     "timestamp": "2024-04-07T12:00:00Z",
     "status": "pending",
     "metadata": {
