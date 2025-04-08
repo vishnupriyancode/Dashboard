@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import bgImage from '../assets/login-bg.jpg';
 
 const Login = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    email: '',
+    Domin: '',
     password: '',
   });
   const [error, setError] = useState('');
@@ -24,9 +24,9 @@ const Login = () => {
 
     try {
       // TODO: Replace with actual API call
-      if (formData.email === 'admin@example.com' && formData.password === 'password') {
+      if (formData.Domin === 'admin' && formData.password === 'password') {
         localStorage.setItem('isAuthenticated', 'true');
-        navigate('/dashboard');
+        navigate('/');
       } else {
         setError('Invalid credentials');
       }
@@ -34,6 +34,14 @@ const Login = () => {
       setError('An error occurred during login');
     }
   };
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+    if (isAuthenticated) {
+      navigate('/');
+    }
+  }, [navigate]);
 
   return (
     <div 
@@ -60,18 +68,18 @@ const Login = () => {
           <form className="mt-10 space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-4">
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-200 mb-2">
-                  Email address
+                <label htmlFor="Domin" className="block text-sm font-medium text-gray-200 mb-2">
+                  Domin
                 </label>
                 <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
+                  id="Domin"
+                  name="Domin"
+                  type="Domin"
+                  autoComplete="Domin"
                   required
                   className="appearance-none rounded-lg relative block w-full px-4 py-3 border border-white/10 placeholder-gray-400 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent sm:text-sm bg-white/5 backdrop-blur-sm transition-all duration-200"
-                  placeholder="Enter your email"
-                  value={formData.email}
+                  placeholder="Enter your Domin"
+                  value={formData.Domin}
                   onChange={handleChange}
                 />
               </div>
