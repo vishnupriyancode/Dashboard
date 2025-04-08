@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { MagnifyingGlassIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import { Menu } from '@headlessui/react';
 import { payloadData } from '../data/payloadData';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 const ApiLogsTable = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -63,10 +65,29 @@ const ApiLogsTable = () => {
     return matchesSearch && matchesStatus;
   });
 
+  const handleExport = () => {
+    const exportData = filteredLogs.map(log => ({
+      'Domain ID': log.domain_id,
+      'Model': log.model,
+      'Status': log.status,
+      'Endpoint': log.endpoint,
+      'Time': log.time,
+      'State': log.status === 'success' ? 'Completed' : log.status === 'error' ? 'Failed' : 'In Progress',
+      'Value': log.value
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'API Logs');
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const data = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    saveAs(data, 'api_logs.xlsx');
+  };
+
   return (
     <div className="flex flex-col">
       <div className="mb-4 flex items-center space-x-4">
-        <div className="relative flex-1">
+        <div className="relative w-64">
           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
             <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
           </div>
@@ -78,6 +99,12 @@ const ApiLogsTable = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
+        <button
+          onClick={handleExport}
+          className="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+        >
+          Export to Excel
+        </button>
         <select
           className="rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
           value={statusFilter}
