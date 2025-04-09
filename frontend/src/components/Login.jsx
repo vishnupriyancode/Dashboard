@@ -93,8 +93,8 @@ const Login = () => {
                   type="password"
                   autoComplete="current-password"
                   required
-                  className="appearance-none rounded-lg relative block w-full px-4 py-3 border border-white/10 placeholder-gray-400 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent sm:text-sm bg-white/5 backdrop-blur-sm transition-all duration-200"
-                  placeholder="Enter your password"
+                  className="appearance-none rounded-lg relative block w-full px-4 py-3 border border-white/10 placeholder-gray-400 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent sm:text-sm bg-transparent backdrop-blur-sm transition-all duration-200 [&:-webkit-autofill]:bg-transparent [&:-webkit-autofill]:shadow-none [&:-webkit-autofill]:-webkit-text-fill-color-white [-webkit-background-clip:text] [&:-webkit-autofill]:[-webkit-box-shadow:0_0_0_30px_transparent_inset]"
+                  placeholder="Enter your Password"
                   value={formData.password}
                   onChange={handleChange}
                 />
