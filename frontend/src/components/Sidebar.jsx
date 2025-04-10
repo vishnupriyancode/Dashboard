@@ -5,11 +5,13 @@ import {
   DocumentTextIcon,
   UserGroupIcon,
   Cog6ToothIcon,
+  CodeBracketIcon,
 } from '@heroicons/react/24/outline';
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: ChartBarIcon },
   { name: 'API Logs', href: '/logs', icon: DocumentTextIcon },
+  { name: 'Dev Logs', href: '/dev-logs', icon: CodeBracketIcon },
   { name: 'Request', href: '/request', icon: UserGroupIcon },
   { name: 'Settings', href: '/settings', icon: Cog6ToothIcon },
 ];

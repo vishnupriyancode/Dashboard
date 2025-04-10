@@ -7,6 +7,7 @@ import Login from './components/Login';
 import ProtectedRoute from './components/ProtectedRoute';
 import Dashboard from './components/Dashboard';
 import RequestPage from './components/RequestPage';
+import DevLogs from './pages/DevLogs';
 
 const DashboardLayout = ({ children }) => {
   return (
@@ -48,7 +49,17 @@ const App = () => {
           }
         />
         <Route
-          path="/Request"
+          path="/dev-logs"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+              <div>Dev Logs Content</div>
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/request"
           element={
             <ProtectedRoute>
               <DashboardLayout>
