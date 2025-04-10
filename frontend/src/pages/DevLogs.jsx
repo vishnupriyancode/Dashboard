@@ -1,9 +1,9 @@
 import React from 'react';
 
-const DevLogs = () => {
+const Devlogs = () => {
   return (
-    <div>Dev Logs</div>
+    <div className="p-6">Dev Logs</div>
   );
 };
 
-export default DevLogs; 
+export default Devlogs; 

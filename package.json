@@ -9,6 +9,7 @@
     "lint": "cd frontend && npm run lint"
   },
   "dependencies": {
-    "@headlessui/react": "^2.2.1"
+    "@headlessui/react": "^2.2.1",
+    "react-toastify": "^11.0.5"
   }
 }

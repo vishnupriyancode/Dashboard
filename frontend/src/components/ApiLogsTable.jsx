@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MagnifyingGlassIcon, EllipsisVerticalIcon, DocumentArrowDownIcon } from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon, EllipsisVerticalIcon, DocumentArrowDownIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { Menu } from '@headlessui/react';
 import { payloadData } from '../data/payloadData';
 import { sampleApiLogs } from '../data/sampleApiLogs';
@@ -10,6 +10,7 @@ const ApiLogsTable = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [logs, setLogs] = useState([]);
+  const [selectedLogs, setSelectedLogs] = useState([]);
 
   useEffect(() => {
     // Load logs from localStorage
@@ -40,6 +41,34 @@ const ApiLogsTable = () => {
     
     // Update localStorage
     localStorage.setItem('apiLogs', JSON.stringify(updatedLogs));
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedLogs.length === 0) return;
+    
+    // Remove selected logs from state
+    const updatedLogs = logs.filter(log => !selectedLogs.includes(log.id));
+    setLogs(updatedLogs);
+    setSelectedLogs([]);
+    
+    // Update localStorage
+    localStorage.setItem('apiLogs', JSON.stringify(updatedLogs));
+  };
+
+  const toggleSelectAll = (checked) => {
+    if (checked) {
+      setSelectedLogs(filteredLogs.map(log => log.id));
+    } else {
+      setSelectedLogs([]);
+    }
+  };
+
+  const toggleSelectLog = (logId) => {
+    setSelectedLogs(prev => 
+      prev.includes(logId) 
+        ? prev.filter(id => id !== logId)
+        : [...prev, logId]
+    );
   };
 
   const copyToClipboard = (value) => {
@@ -114,6 +143,15 @@ const ApiLogsTable = () => {
           <DocumentArrowDownIcon className="h-5 w-5" aria-hidden="true" />
           Export to Excel
         </button>
+        {selectedLogs.length > 0 && (
+          <button
+            onClick={handleBulkDelete}
+            className="inline-flex items-center gap-2 rounded-md bg-red-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 transition-colors duration-200"
+          >
+            <TrashIcon className="h-5 w-5" aria-hidden="true" />
+            Delete Selected ({selectedLogs.length})
+          </button>
+        )}
         <select
           className="rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
           value={statusFilter}
@@ -130,6 +168,14 @@ const ApiLogsTable = () => {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                  checked={selectedLogs.length === filteredLogs.length && filteredLogs.length > 0}
+                  onChange={(e) => toggleSelectAll(e.target.checked)}
+                />
+              </th>
               <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                 Domain ID
               </th>
@@ -162,6 +208,14 @@ const ApiLogsTable = () => {
           <tbody className="divide-y divide-gray-200 bg-white">
             {filteredLogs.map((log) => (
               <tr key={log.id} className={log.status === 'error' ? 'bg-red-50' : ''}>
+                <td className="whitespace-nowrap px-6 py-4">
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                    checked={selectedLogs.includes(log.id)}
+                    onChange={() => toggleSelectLog(log.id)}
+                  />
+                </td>
                 <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
                   <span className="font-mono">{log.domain_id}</span>
                 </td>
