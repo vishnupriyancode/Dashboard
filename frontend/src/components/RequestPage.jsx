@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import sampleData from '../data/sampleData.json';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ValidateRequest from './ValidateRequest';
 
 // Custom toast styles
 const toastStyles = {
@@ -167,7 +168,9 @@ const RequestPage = () => {
     showNotification(status === 'success' ? 'success' : 'error', method, requestId);
   };
 
-  const handleSubmit = async (method) => {
+  const handleValidateSubmit = async (method, key) => {
+    setKeyValue(key); // We'll keep this for UI state
+    // Instead of calling handleSubmit, we'll implement the logic directly here
     setLoading(true);
     setError(null);
     setResponse(null);
@@ -176,46 +179,46 @@ const RequestPage = () => {
     const processingToast = showNotification('processing', method);
 
     try {
-      if (keyValue.length !== 13) {
+      if (key.length !== 13) {
         toast.dismiss(processingToast);
         throw new Error('Key must be exactly 13 digits');
       }
 
       console.log('Environment:', selectedEnv);
-      console.log('Searching for key:', keyValue);
+      console.log('Searching for key:', key);
       console.log('Available keys:', Object.keys(sampleData));
-      console.log('Found data:', sampleData[keyValue]);
+      console.log('Found data:', sampleData[key]);
 
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       if (method === 'GET') {
-        if (sampleData[keyValue]) {
-          console.log('GET Response:', sampleData[keyValue]);
+        if (sampleData[key]) {
+          console.log('GET Response:', sampleData[key]);
           setResponse({
             environment: selectedEnv,
             baseUrl: environments.find(env => env.id === selectedEnv).baseUrl,
-            data: sampleData[keyValue]
+            data: sampleData[key]
           });
-          logApiRequest('GET', keyValue, 'success', '/api/validate');
+          logApiRequest('GET', key, 'success', '/api/validate');
         } else {
-          logApiRequest('GET', keyValue, 'error', '/api/validate');
+          logApiRequest('GET', key, 'error', '/api/validate');
           throw new Error('Key not found');
         }
       } else if (method === 'POST') {
-        if (sampleData[keyValue]) {
+        if (sampleData[key]) {
           const responseData = { 
             environment: selectedEnv,
             baseUrl: environments.find(env => env.id === selectedEnv).baseUrl,
             message: 'Data updated successfully', 
-            data: sampleData[keyValue],
+            data: sampleData[key],
             timestamp: new Date().toISOString()
           };
           console.log('POST Response:', responseData);
           setResponse(responseData);
-          logApiRequest('POST', keyValue, 'success', '/api/validate');
+          logApiRequest('POST', key, 'success', '/api/validate');
         } else {
-          logApiRequest('POST', keyValue, 'error', '/api/validate');
+          logApiRequest('POST', key, 'error', '/api/validate');
           throw new Error('Invalid key');
         }
       }
@@ -235,124 +238,61 @@ const RequestPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <ToastContainer
-        position="bottom-right"
-        closeButton={false}
-        limit={2}
-        className="!-translate-y-4"
-        style={{ width: '360px' }}
-      />
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-800 mb-8">Validation</h1>
-        
-        {/* Environment Selector */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-4">Environment Settings</h2>
-          <div className="flex items-center space-x-4">
-            <label className="text-gray-700 font-medium">Select Environment:</label>
-            <select
-              value={selectedEnv}
-              onChange={(e) => setSelectedEnv(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-            >
-              {environments.map(env => (
-                <option key={env.id} value={env.id}>
-                  {env.name} - {env.baseUrl}
-                </option>
-              ))}
-            </select>
-          </div>
+    <div className="container mx-auto px-4 py-6">
+      <div className="mb-6">
+        <label className="block text-sm font-medium text-gray-700 mb-2">Environment</label>
+        <select
+          value={selectedEnv}
+          onChange={(e) => setSelectedEnv(e.target.value)}
+          className="block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+        >
+          {environments.map((env) => (
+            <option key={env.id} value={env.id}>
+              {env.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="flex flex-col lg:flex-row gap-6">
+        <div className="lg:w-1/2">
+          <ValidateRequest onSubmit={handleValidateSubmit} isLoading={loading} />
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Request Form */}
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-xl font-semibold mb-4">Validate Request</h2>
-            
-            <div className="mb-6">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                13-Digit Key
-              </label>
-              <input
-                type="text"
-                value={keyValue}
-                onChange={(e) => setKeyValue(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter 13-digit key"
-                maxLength={13}
-              />
-            </div>
 
-            <div className="flex space-x-4">
-              <button
-                onClick={() => handleSubmit('GET')}
-                disabled={loading}
-                className={`flex-1 font-bold py-2 px-4 rounded-md transition duration-200 ${
-                  loading 
-                    ? 'opacity-50 cursor-not-allowed' 
-                    : 'hover:bg-gray-700'
-                } ${
-                  error ? 'bg-red-600 hover:bg-red-700' : 'bg-gray-600'
-                } text-white`}
-              >
-                <div className="flex items-center justify-center space-x-2">
-                  {loading ? (
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  ) : null}
-                  <span>{loading ? 'Processing...' : 'GET Request'}</span>
-                </div>
-              </button>
-              
-              <button
-                onClick={() => handleSubmit('POST')}
-                disabled={loading}
-                className={`flex-1 font-bold py-2 px-4 rounded-md transition duration-200 ${
-                  loading 
-                    ? 'opacity-50 cursor-not-allowed' 
-                    : 'hover:bg-gray-700'
-                } ${
-                  error ? 'bg-red-600 hover:bg-red-700' : 'bg-gray-600'
-                } text-white`}
-              >
-                <div className="flex items-center justify-center space-x-2">
-                  {loading ? (
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  ) : null}
-                  <span>{loading ? 'Processing...' : 'POST Request'}</span>
-                </div>
-              </button>
+        <div className="lg:w-1/2">
+          {response && (
+            <div className="bg-white shadow rounded-lg p-6 h-full">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Response</h3>
+              <pre className="bg-gray-50 p-4 rounded-md overflow-auto max-h-[500px]">
+                {JSON.stringify(response, null, 2)}
+              </pre>
             </div>
-          </div>
+          )}
 
-          {/* Response Display */}
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-xl font-semibold mb-4">Validation Result</h2>
-            
-            {loading ? (
-              <div className="flex items-center justify-center h-32">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+          {error && !response && (
+            <div className="bg-red-50 border-l-4 border-red-400 p-4 h-full">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-red-700">{error}</p>
+                </div>
               </div>
-            ) : error ? (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
-                <p className="font-medium">Error</p>
-                <p>{error}</p>
-              </div>
-            ) : response ? (
-              <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md">
-                <p className="font-medium">Success</p>
-                <pre className="mt-2 overflow-auto">
-                  {JSON.stringify(response, null, 2)}
-                </pre>
-              </div>
-            ) : (
-              <div className="text-gray-500 text-center py-8">
-                Make a request to see the response
-              </div>
-            )}
-          </div>
+            </div>
+          )}
+
+          {!response && !error && (
+            <div className="bg-white shadow rounded-lg p-6 h-full flex items-center justify-center text-gray-500">
+              Make a request to see the response
+            </div>
+          )}
         </div>
       </div>
+
+      <ToastContainer />
     </div>
   );
 };
